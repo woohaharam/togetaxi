@@ -59,3 +59,20 @@ node scripts/build-universities.mjs > supabase/migrations/<새 타임스탬프>_
 3. **Authentication → Emails → Templates**: "Magic Link"와 "Confirm signup" 본문에
    `{{ .Token }}`을 넣어 인증번호가 보이게 한다 (`supabase/templates/otp.html` 참고).
    안 바꿔도 메일의 링크로 로그인은 된다.
+
+## 운영 통계
+
+`/admin` 에서 가입자·모집·매칭률·아낀 택시비 등을 본다. 내 정보 화면 아래에 링크가 뜬다.
+운영자는 SQL로만 추가한다.
+
+```sql
+insert into public.admins (user_id)
+select id from auth.users where email = '<학교 메일>';
+```
+
+## 광고
+
+카카오 애드핏에서 320x100 광고 단위를 만들고, Vercel 환경 변수 `NEXT_PUBLIC_ADFIT_UNIT`에
+광고 단위 ID(DAN-…)를 넣은 뒤 다시 배포하면 목록의 세 번째 글 뒤에 광고 한 칸이 붙는다.
+모집 글이 4개 미만이거나 채울 광고가 없으면 칸 자체가 나오지 않는다.
+변수를 지우고 다시 배포하면 꺼진다.

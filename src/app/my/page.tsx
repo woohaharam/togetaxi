@@ -1,3 +1,4 @@
+import Link from "next/link";
 import BottomNav from "@/components/BottomNav";
 import Avatar from "@/components/Avatar";
 import RideCard from "@/components/RideCard";
@@ -10,11 +11,14 @@ import ProfileForm from "./ProfileForm";
 export default async function MyPage() {
   const { supabase, profile, user } = await requireProfile();
 
-  const { data } = await supabase
-    .from("ride_members")
-    .select("ride:rides(*, university:universities(id, name, campus, region))")
-    .eq("user_id", profile.id)
-    .returns<{ ride: RideWithUniversity | null }[]>();
+  const [{ data }, { data: isAdmin }] = await Promise.all([
+    supabase
+      .from("ride_members")
+      .select("ride:rides(*, university:universities(id, name, campus, region))")
+      .eq("user_id", profile.id)
+      .returns<{ ride: RideWithUniversity | null }[]>(),
+    supabase.rpc("is_admin"),
+  ]);
 
   const rides = (data ?? []).flatMap((d) => (d.ride ? [d.ride] : []));
   const upcoming = rides
@@ -61,6 +65,13 @@ export default async function MyPage() {
               ))}
             </div>
           </>
+        )}
+
+        {isAdmin === true && (
+          <Link href="/admin" className="card mt-8 flex items-center justify-between text-[15px] font-medium">
+            운영 통계
+            <span className="text-zinc-400">›</span>
+          </Link>
         )}
 
         <form action="/auth/signout" method="post" className="mt-10 text-center">

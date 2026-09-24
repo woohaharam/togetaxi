@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Fragment } from "react";
+import AdSlot from "@/components/AdSlot";
 import BottomNav from "@/components/BottomNav";
 import RideCard from "@/components/RideCard";
 import { SearchIcon } from "@/components/icons";
@@ -7,6 +9,8 @@ import { universityLabel } from "@/lib/format";
 import type { RideWithUniversity } from "@/lib/types";
 
 type Scope = "school" | "region" | "all";
+
+const AD_AFTER = 3;
 type SearchParams = Promise<{ scope?: string; q?: string }>;
 
 export default async function HomePage({ searchParams }: { searchParams: SearchParams }) {
@@ -90,8 +94,12 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
             </Link>
           </div>
         ) : (
-          rides.map((ride) => (
-            <RideCard key={ride.id} ride={ride} showUniversity={ride.university_id !== profile.university_id} />
+          rides.map((ride, i) => (
+            <Fragment key={ride.id}>
+              <RideCard ride={ride} showUniversity={ride.university_id !== profile.university_id} />
+              {/* 모집 글이 어느 정도 있을 때만, 세 번째 글 뒤에 한 칸 */}
+              {i === AD_AFTER - 1 && rides.length > AD_AFTER && <AdSlot />}
+            </Fragment>
           ))
         )}
       </main>
