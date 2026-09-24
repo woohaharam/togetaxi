@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  --color-taxi: #ffc629;
+  --color-taxi-dark: #e5a800;
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui,
+    "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+}
+
+html,
+body {
+  background: #f4f4f5;
+  color: #18181b;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@utility input {
+  @apply w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-base outline-none transition focus:border-zinc-900;
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-1 rounded-xl px-4 py-3 text-base font-semibold transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40;
+}
+
+@utility btn-primary {
+  @apply btn bg-zinc-900 text-white;
+}
+
+@utility btn-taxi {
+  @apply btn bg-taxi text-zinc-900;
+}
+
+@utility btn-ghost {
+  @apply btn bg-zinc-100 text-zinc-700;
+}
+
+@utility chip {
+  @apply rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-700 transition;
+
+  &[data-active="true"] {
+    @apply border-zinc-900 bg-zinc-900 text-white;
+  }
+}
+
+@utility card {
+  @apply rounded-2xl bg-white p-4 shadow-sm;
+}
