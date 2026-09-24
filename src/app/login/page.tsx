@@ -7,6 +7,9 @@ import { errorMessage } from "@/lib/format";
 
 const SCHOOL_EMAIL = /^[^\s@]+@[^\s@]+\.(ac\.kr|edu)$/i;
 const RESEND_AFTER = 60;
+// Supabase 설정(Email OTP Length)에 따라 6~10자리로 온다
+const CODE_MIN = 6;
+const CODE_MAX = 10;
 
 export default function LoginPage() {
   const router = useRouter();
@@ -111,16 +114,16 @@ export default function LoginPage() {
         ) : (
           <form onSubmit={verify} className="space-y-3">
             <label className="label" htmlFor="code">
-              {email}로 보낸 인증번호 6자리
+              {email}로 보낸 인증번호
             </label>
             <input
               id="code"
-              className="input text-center text-2xl font-semibold tracking-[0.4em] tabular-nums"
+              className="input text-center text-2xl font-semibold tracking-[0.3em] tabular-nums"
               inputMode="numeric"
               autoComplete="one-time-code"
-              maxLength={6}
+              maxLength={CODE_MAX}
               value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, CODE_MAX))}
               autoFocus
               required
             />
@@ -128,7 +131,7 @@ export default function LoginPage() {
               메일에 있는 로그인 링크를 눌러도 돼요. 스팸함도 한번 확인해 주세요.
             </p>
             {error && <p className="text-sm text-red-500">{error}</p>}
-            <button className="btn-primary w-full" disabled={loading || code.length !== 6}>
+            <button className="btn-primary w-full" disabled={loading || code.length < CODE_MIN}>
               {loading ? "확인 중" : "확인"}
             </button>
             <div className="flex justify-between pt-1 text-sm text-zinc-500">
