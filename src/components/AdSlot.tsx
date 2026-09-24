@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 
 const UNIT = process.env.NEXT_PUBLIC_ADFIT_UNIT;
-const SCRIPT_SRC = "https://t1.daumcdn.net/kas/static/ba.min.js";
+const SCRIPT_SRC = "https://t1.kakaocdn.net/kas/static/ba.min.js";
 
 /**
  * 카카오 애드핏 배너 (320x100). NEXT_PUBLIC_ADFIT_UNIT 이 없으면 아무것도 그리지 않는다.
