@@ -2,9 +2,9 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "같이타 — 대학생 택시 같이 타기",
+    name: "같이타",
     short_name: "같이타",
-    description: "같은 방향 가는 학우와 택시비를 나눠요",
+    description: "같은 방향 가는 학생끼리 택시비 나눠 내기",
     start_url: "/",
     display: "standalone",
     background_color: "#fafafa",

@@ -2,24 +2,24 @@
 
 @theme {
   --color-taxi: #ffc629;
-  --color-taxi-dark: #e5a800;
   --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui,
     "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
 }
 
 html,
 body {
-  background: #f4f4f5;
+  background: #e4e4e7;
   color: #18181b;
   -webkit-tap-highlight-color: transparent;
+  word-break: keep-all;
 }
 
 @utility input {
-  @apply w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-base outline-none transition focus:border-zinc-900;
+  @apply w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-base outline-none transition-colors placeholder:text-zinc-400 focus:border-zinc-900;
 }
 
 @utility btn {
-  @apply inline-flex items-center justify-center gap-1 rounded-xl px-4 py-3 text-base font-semibold transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40;
+  @apply inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-3.5 text-base font-semibold transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100;
 }
 
 @utility btn-primary {
@@ -35,7 +35,7 @@ body {
 }
 
 @utility chip {
-  @apply rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-700 transition;
+  @apply rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-sm text-zinc-600 transition-colors;
 
   &[data-active="true"] {
     @apply border-zinc-900 bg-zinc-900 text-white;
@@ -43,5 +43,9 @@ body {
 }
 
 @utility card {
-  @apply rounded-2xl bg-white p-4 shadow-sm;
+  @apply rounded-2xl bg-white p-4;
+}
+
+@utility label {
+  @apply block text-[13px] font-medium text-zinc-500;
 }

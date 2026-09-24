@@ -6,6 +6,8 @@ export type University = {
   name: string;
   campus: string;
   region: string;
+  kind?: "4년제" | "전문대" | "대학원" | null;
+  domains?: string[];
 };
 
 export type Profile = {

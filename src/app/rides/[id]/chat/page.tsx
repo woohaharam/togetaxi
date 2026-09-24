@@ -13,7 +13,7 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
   const members = await fetchMembers(supabase, id);
   if (!members.some((m) => m.user_id === profile.id)) redirect(`/rides/${id}`);
 
-  const [host, { data: messages }] = await Promise.all([
+  const [host, { data: recent }] = await Promise.all([
     fetchHost(supabase, ride.host_id),
     supabase
       .from("messages")
@@ -23,13 +23,26 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
       .limit(200)
       .returns<Message[]>(),
   ]);
+  const messages = (recent ?? []).reverse();
+
+  // 나간 사람이 남긴 메시지에도 이름을 붙이기 위해
+  const names: Record<string, string> = {};
+  for (const m of members) if (m.profile) names[m.user_id] = m.profile.nickname;
+  const missing = [...new Set(messages.map((m) => m.user_id))].filter(
+    (uid): uid is string => !!uid && !names[uid],
+  );
+  if (missing.length) {
+    const { data } = await supabase.from("profiles").select("id, nickname").in("id", missing);
+    for (const p of data ?? []) names[p.id] = p.nickname;
+  }
 
   return (
     <ChatRoom
       me={profile}
       initialRide={ride}
       initialMembers={members}
-      initialMessages={(messages ?? []).reverse()}
+      initialMessages={messages}
+      initialNames={names}
       hostPayLink={host?.pay_link ?? null}
     />
   );

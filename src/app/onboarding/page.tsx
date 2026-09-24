@@ -10,19 +10,15 @@ export default async function OnboardingPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: existing } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { data: existing } = await supabase.from("profiles").select("id").eq("id", user.id).maybeSingle();
   if (existing) redirect("/");
 
   const { data: universities } = await supabase
     .from("universities")
-    .select("id, name, campus, region")
+    .select("id, name, campus, region, kind, domains")
     .order("name")
     .order("campus")
     .returns<University[]>();
 
-  return <OnboardingForm userId={user.id} universities={universities ?? []} />;
+  return <OnboardingForm userId={user.id} email={user.email ?? ""} universities={universities ?? []} />;
 }

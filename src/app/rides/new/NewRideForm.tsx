@@ -1,29 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import PageHeader from "@/components/PageHeader";
+import { SwapIcon } from "@/components/icons";
 import { createClient } from "@/lib/supabase/client";
-import { errorMessage, kstLocalToIso, nowKstLocal, perPerson, won } from "@/lib/format";
+import { errorMessage, kstLocalFromNow, kstLocalToIso, perPerson, won } from "@/lib/format";
 import type { Gender } from "@/lib/types";
 
-function PlaceField({
-  label,
+function PlaceInput({
+  id,
   value,
   onChange,
   places,
   placeholder,
 }: {
-  label: string;
+  id: string;
   value: string;
   onChange: (v: string) => void;
   places: string[];
   placeholder: string;
 }) {
   return (
-    <div className="space-y-2">
-      <label className="text-sm font-medium text-zinc-600">{label}</label>
+    <>
       <input
+        id={id}
         className="input"
         maxLength={40}
         placeholder={placeholder}
@@ -32,12 +33,12 @@ function PlaceField({
         required
       />
       {places.length > 0 && (
-        <div className="-mx-4 flex gap-1.5 overflow-x-auto px-4 pb-1">
+        <div className="-mx-5 flex gap-1.5 overflow-x-auto px-5 pt-2 [scrollbar-width:none]">
           {places.map((p) => (
             <button
               type="button"
               key={p}
-              className="chip shrink-0 py-1 text-xs"
+              className="chip shrink-0 px-3 py-1 text-[13px]"
               data-active={value === p}
               onClick={() => onChange(p)}
             >
@@ -46,16 +47,15 @@ function PlaceField({
           ))}
         </div>
       )}
-    </div>
+    </>
   );
 }
 
 export default function NewRideForm({ places, gender }: { places: string[]; gender: Gender }) {
   const router = useRouter();
-  const supabase = createClient();
   const [origin, setOrigin] = useState(places[0] ?? "");
   const [destination, setDestination] = useState("");
-  const [departAt, setDepartAt] = useState(nowKstLocal(30));
+  const [departAt, setDepartAt] = useState(() => kstLocalFromNow(30));
   const [capacity, setCapacity] = useState(4);
   const [sameGender, setSameGender] = useState(false);
   const [fare, setFare] = useState("");
@@ -68,9 +68,12 @@ export default function NewRideForm({ places, gender }: { places: string[]; gend
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    if (origin.trim() === destination.trim()) return setError("출발지와 도착지가 같아요");
+    if (origin.trim() === destination.trim()) {
+      setError("출발지와 도착지가 같아요");
+      return;
+    }
     setLoading(true);
-    const { data, error } = await supabase.rpc("create_ride", {
+    const { data, error } = await createClient().rpc("create_ride", {
       p_origin: origin,
       p_destination: destination,
       p_depart_at: kstLocalToIso(departAt),
@@ -79,67 +82,77 @@ export default function NewRideForm({ places, gender }: { places: string[]; gend
       p_estimated_fare: fareNum || null,
       p_note: note,
     });
-    setLoading(false);
-    if (error) return setError(errorMessage(error));
+    if (error) {
+      setLoading(false);
+      setError(errorMessage(error));
+      return;
+    }
     router.replace(`/rides/${data}/chat`);
   }
 
   return (
-    <main className="px-4 pb-10">
-      <header className="flex items-center gap-3 py-4">
-        <Link href="/" className="text-2xl leading-none">
-          ←
-        </Link>
-        <h1 className="text-lg font-bold">택시 같이 탈 사람 구해요</h1>
-      </header>
+    <>
+      <PageHeader title="모집하기" />
+      <form onSubmit={submit} className="space-y-7 px-5 pt-2 pb-10">
+        <section>
+          <div className="flex items-center justify-between">
+            <label className="label" htmlFor="origin">
+              출발
+            </label>
+            <button
+              type="button"
+              className="flex items-center gap-1 text-[13px] text-zinc-500"
+              onClick={() => {
+                setOrigin(destination);
+                setDestination(origin);
+              }}
+            >
+              <SwapIcon size={15} />
+              출발·도착 바꾸기
+            </button>
+          </div>
+          <div className="mt-2">
+            <PlaceInput id="origin" value={origin} onChange={setOrigin} places={places} placeholder="어디서 타나요?" />
+          </div>
+          <label className="label mt-5" htmlFor="destination">
+            도착
+          </label>
+          <div className="mt-2">
+            <PlaceInput
+              id="destination"
+              value={destination}
+              onChange={setDestination}
+              places={places}
+              placeholder="어디로 가나요?"
+            />
+          </div>
+        </section>
 
-      <form onSubmit={submit} className="space-y-6">
-        <PlaceField
-          label="출발"
-          value={origin}
-          onChange={setOrigin}
-          places={places}
-          placeholder="예: 정문 앞"
-        />
-        <button
-          type="button"
-          className="mx-auto -my-3 block text-sm text-zinc-500"
-          onClick={() => {
-            setOrigin(destination);
-            setDestination(origin);
-          }}
-        >
-          ⇅ 출발/도착 바꾸기
-        </button>
-        <PlaceField
-          label="도착"
-          value={destination}
-          onChange={setDestination}
-          places={places}
-          placeholder="예: 신경주역"
-        />
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-zinc-600">출발 시간</label>
+        <section className="space-y-2">
+          <label className="label" htmlFor="depart">
+            출발 시간
+          </label>
           <input
+            id="depart"
             className="input"
             type="datetime-local"
-            min={nowKstLocal()}
-            max={nowKstLocal(30 * 24 * 60)}
+            min={kstLocalFromNow()}
+            max={kstLocalFromNow(30 * 24 * 60)}
+            step={600}
             value={departAt}
             onChange={(e) => setDepartAt(e.target.value)}
             required
           />
-        </div>
+        </section>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-zinc-600">총 인원 (나 포함)</label>
+        <section className="space-y-2">
+          <span className="label">몇 명이서 탈까요? (나 포함)</span>
           <div className="grid grid-cols-3 gap-2">
             {[2, 3, 4].map((n) => (
               <button
                 type="button"
                 key={n}
-                className="chip py-2.5 text-base"
+                className="chip rounded-xl py-2.5 text-base"
                 data-active={capacity === n}
                 onClick={() => setCapacity(n)}
               >
@@ -147,54 +160,62 @@ export default function NewRideForm({ places, gender }: { places: string[]; gend
               </button>
             ))}
           </div>
-        </div>
+        </section>
 
-        <label className="flex items-center justify-between rounded-xl bg-white px-4 py-3">
+        <label className="flex cursor-pointer items-center justify-between gap-4 rounded-xl bg-white px-4 py-3.5">
           <span>
-            <span className="font-medium">{gender === "female" ? "여성" : "남성"}만 참여 가능</span>
-            <span className="block text-xs text-zinc-400">동성끼리만 탈 수 있게 제한해요</span>
+            <span className="block font-medium">{gender === "female" ? "여자" : "남자"}끼리만 타기</span>
+            <span className="block text-[13px] text-zinc-400">다른 성별은 참여할 수 없어요</span>
           </span>
           <input
             type="checkbox"
-            className="size-5 accent-zinc-900"
+            className="size-5 shrink-0 accent-zinc-900"
             checked={sameGender}
             onChange={(e) => setSameGender(e.target.checked)}
           />
         </label>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-zinc-600">예상 택시비 (선택)</label>
-          <input
-            className="input"
-            inputMode="numeric"
-            placeholder="예: 16000"
-            value={fare}
-            onChange={(e) => setFare(e.target.value.replace(/\D/g, "").slice(0, 7))}
-          />
+        <section className="space-y-2">
+          <label className="label" htmlFor="fare">
+            예상 택시비 <span className="font-normal text-zinc-400">(선택)</span>
+          </label>
+          <div className="relative">
+            <input
+              id="fare"
+              className="input pr-10"
+              inputMode="numeric"
+              placeholder="16,000"
+              value={fare ? Number(fare).toLocaleString("ko-KR") : ""}
+              onChange={(e) => setFare(e.target.value.replace(/\D/g, "").slice(0, 7))}
+            />
+            <span className="absolute top-1/2 right-4 -translate-y-1/2 text-zinc-400">원</span>
+          </div>
           {fareNum > 0 && (
             <p className="text-sm text-zinc-500">
-              {capacity}명이 타면 1인당 약{" "}
-              <b className="text-zinc-900">{won(perPerson(fareNum, capacity))}</b>
+              {capacity}명이 다 모이면 1인 <b className="font-semibold text-zinc-900">{won(perPerson(fareNum, capacity))}</b>
             </p>
           )}
-        </div>
+        </section>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-zinc-600">한마디 (선택)</label>
+        <section className="space-y-2">
+          <label className="label" htmlFor="note">
+            하고 싶은 말 <span className="font-normal text-zinc-400">(선택)</span>
+          </label>
           <textarea
-            className="input min-h-20 resize-none"
+            id="note"
+            className="input min-h-24 resize-none"
             maxLength={200}
-            placeholder="예: 정문 편의점 앞에서 만나요. 캐리어 있어요!"
+            placeholder="만날 곳, 짐 여부 같은 걸 적어 두면 좋아요"
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />
-        </div>
+        </section>
 
         {error && <p className="text-sm text-red-500">{error}</p>}
         <button className="btn-taxi w-full" disabled={loading}>
-          {loading ? "올리는 중…" : "공고 올리기"}
+          {loading ? "올리는 중" : "모집 열기"}
         </button>
       </form>
-    </main>
+    </>
   );
 }

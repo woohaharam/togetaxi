@@ -20,6 +20,7 @@
     "@types/node": "^26.6.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "korea-universities": "^1.0.1",
     "supabase": "^2.117.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3"

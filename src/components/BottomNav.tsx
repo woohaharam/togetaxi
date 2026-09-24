@@ -2,29 +2,30 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { HomeIcon, PlusIcon, TicketIcon } from "./icons";
 
 const TABS = [
-  { href: "/", label: "홈", icon: "🏠" },
-  { href: "/rides/new", label: "공고 올리기", icon: "➕" },
-  { href: "/my", label: "내 택시", icon: "🚕" },
+  { href: "/", label: "홈", Icon: HomeIcon },
+  { href: "/rides/new", label: "모집하기", Icon: PlusIcon },
+  { href: "/my", label: "내 택시", Icon: TicketIcon },
 ];
 
 export default function BottomNav() {
   const pathname = usePathname();
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto flex max-w-md border-t border-zinc-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
-      {TABS.map((t) => {
-        const active = t.href === "/" ? pathname === "/" : pathname.startsWith(t.href);
+    <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto flex max-w-md border-t border-zinc-200/80 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
+      {TABS.map(({ href, label, Icon }) => {
+        const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
         return (
           <Link
-            key={t.href}
-            href={t.href}
-            className={`flex flex-1 flex-col items-center gap-0.5 py-2 text-xs ${
+            key={href}
+            href={href}
+            className={`flex flex-1 flex-col items-center gap-1 pt-2.5 pb-2 text-[11px] ${
               active ? "font-semibold text-zinc-900" : "text-zinc-400"
             }`}
           >
-            <span className="text-xl leading-none">{t.icon}</span>
-            {t.label}
+            <Icon size={22} strokeWidth={active ? 2.1 : 1.8} />
+            {label}
           </Link>
         );
       })}

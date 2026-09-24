@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Member, Profile, RideWithUniversity } from "@/lib/types";
+import type { Member, Profile, Ride, RideWithUniversity } from "@/lib/types";
 
 export async function fetchRide(supabase: SupabaseClient, id: string) {
   const { data } = await supabase
@@ -29,14 +29,25 @@ export async function fetchHost(supabase: SupabaseClient, hostId: string) {
   return data;
 }
 
-/** 참여 불가 사유 (참여 가능하면 null) */
-export function joinBlocker(ride: RideWithUniversity, me: Pick<Profile, "gender">) {
-  if (ride.status === "cancelled") return "취소된 공고예요";
-  if (ride.status === "closed") return "모집이 마감됐어요";
-  if (new Date(ride.depart_at) < new Date()) return "출발 시간이 지났어요";
-  if (ride.member_count >= ride.capacity) return "자리가 모두 찼어요";
+export type RideState = "open" | "full" | "closed" | "departed" | "cancelled";
+
+export function rideState(ride: Ride): RideState {
+  if (ride.status === "cancelled") return "cancelled";
+  if (new Date(ride.depart_at) < new Date()) return "departed";
+  if (ride.status === "closed") return "closed";
+  if (ride.member_count >= ride.capacity) return "full";
+  return "open";
+}
+
+/** 참여할 수 없으면 그 이유를, 가능하면 null */
+export function joinBlocker(ride: Ride, me: Pick<Profile, "gender">) {
+  const state = rideState(ride);
+  if (state === "cancelled") return "취소된 모집이에요";
+  if (state === "departed") return "이미 출발했어요";
+  if (state === "closed") return "모집이 끝났어요";
+  if (state === "full") return "자리가 다 찼어요";
   if (ride.same_gender_only && ride.host_gender !== me.gender) {
-    return `${ride.host_gender === "female" ? "여성" : "남성"}만 참여할 수 있어요`;
+    return ride.host_gender === "female" ? "여자만 탈 수 있어요" : "남자만 탈 수 있어요";
   }
   return null;
 }

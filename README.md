@@ -1,78 +1,61 @@
-# 같이타 (togetaxi) 🚕
+# 같이타
 
-전국 대학생을 위한 **택시 같이 타기** 서비스예요.
-공고를 올리면 같은 방향 가는 학우가 **"같이 타기"** 를 누르고, 바로 **채팅방**으로 연결돼요.
-첫 기준 캠퍼스는 동국대 WISE캠퍼스이고, 전국 어느 학교에서든 쓸 수 있어요.
+같은 방향 가는 대학생끼리 택시를 같이 타고 요금을 나눠 내는 웹앱.
 
-## 주요 기능
+- 학교 메일(.ac.kr, .edu) 인증으로만 가입
+- 전국 408개 대학·전문대 등록 (커리어넷 학교 목록 기준), 없으면 직접 추가
+- 메일 도메인으로 학교 자동 추천
+- 모집 글 → "같이 타기" → 바로 그룹 채팅
+- 동성끼리만 타기, 정원, 모집 마감·취소, 내보내기
+- 실제 요금 입력하면 1인 금액 공지, 방장 송금 링크·계좌 표시
+- 학교마다 자주 가는 장소를 실제 모집 기록에서 뽑아 추천
 
-| 기능 | 설명 |
-| --- | --- |
-| 학교 이메일 인증 | `.ac.kr` / `.edu` 이메일로 받은 6자리 인증번호로 가입·로그인 (DB에서도 한 번 더 검사) |
-| 학교 · 캠퍼스 선택 | 전국 주요 대학 기본 등록, 목록에 없으면 직접 추가 |
-| 공고 올리기 | 출발/도착(학교별 자주 가는 장소 버튼), 출발 시간, 총 인원 2~4명, 동성만 옵션, 예상 요금 → 1인당 금액 자동 계산 |
-| 공고 목록 | 우리 학교 / 우리 지역 / 전국 필터, 목적지 검색 |
-| 같이 타기 → 채팅 | 누르면 바로 참여하고 실시간 그룹 채팅방으로 이동 (정원·성별 조건은 서버에서 검사) |
-| 방장 기능 | 모집 마감/재개, 공고 취소, 참여자 내보내기, **요금 정산**(실제 요금 입력 → 1인당 금액 공지) |
-| 정산 받을 곳 | 내 정보에 토스/카카오페이 송금 링크나 계좌를 등록해 두면 채팅방에 "송금하기/계좌 복사" 버튼이 떠요 |
-| 내 택시 | 예정된 택시 / 지난 택시 모아보기 |
-| PWA | 휴대폰 홈 화면에 앱처럼 추가 가능 |
+## 구조
 
-## 기술 스택
-
-- **Next.js 15** (App Router) + TypeScript + Tailwind CSS v4
-- **Supabase**: 이메일 OTP 인증, Postgres + RLS(행 수준 보안), Realtime 채팅
+Next.js 15 (App Router) + Supabase (Postgres, Auth, Realtime).
 
 ```
-src/
-  app/
-    login/            이메일 인증번호 로그인
-    onboarding/       닉네임 · 성별 · 학교 설정
-    page.tsx          공고 목록 (홈)
-    rides/new/        공고 올리기
-    rides/[id]/       공고 상세 + 같이 타기
-    rides/[id]/chat/  실시간 채팅 · 정산
-    my/               내 정보 · 내 택시
-  lib/                Supabase 클라이언트, 타입, 포맷 유틸
-supabase/
-  migrations/         DB 스키마 · RLS · RPC 함수 · 기본 학교 목록
-  templates/otp.html  인증번호 메일 템플릿
+src/app/            화면 (login, onboarding, 홈, rides/new, rides/[id], rides/[id]/chat, my)
+src/lib/            Supabase 클라이언트, 포맷 함수, 모집 상태 계산
+supabase/migrations 스키마, RLS, RPC 함수, 학교·장소 시드
+scripts/            학교 목록 시드 생성기
 ```
 
-공고 생성·참여·나가기·내보내기·정산은 모두 DB 함수(RPC)로만 처리해서
-앱을 거치지 않고 API를 직접 호출해도 정원 초과, 성별 조건 우회, 남의 채팅 읽기 같은 걸 할 수 없어요.
+모집 생성·참여·나가기·정산 같은 쓰기 작업은 전부 Postgres 함수 안에서 처리한다.
+정원, 성별 조건, 방장 권한 검사가 DB에 있기 때문에 API를 직접 호출해도 우회할 수 없다.
+채팅은 참여자만 읽고 쓸 수 있다 (RLS).
 
-## 로컬에서 실행하기
+## 로컬 실행
 
-필요한 것: Node.js 20+, Docker
+Node 20+, Docker 필요.
 
 ```bash
 npm install
-npx supabase start          # 로컬 Supabase 실행 (마이그레이션 자동 적용)
-npx supabase status -o env  # API_URL, ANON_KEY 확인
-cp .env.example .env.local  # 위 값으로 채우기
-npm run dev                 # http://localhost:3000
+npx supabase start
+npx supabase status -o env     # API_URL, ANON_KEY 확인
+cp .env.example .env.local     # 값 채우기
+npm run dev
 ```
 
-로컬에서는 메일이 실제로 가지 않아요. 인증번호는 **http://127.0.0.1:54324** (Mailpit)에서 확인하세요.
+로컬 인증 메일은 http://127.0.0.1:54324 에서 확인.
 
-## 배포하기 (Supabase + Vercel)
+## 학교 목록 갱신
 
-1. [supabase.com](https://supabase.com)에서 프로젝트 생성
-2. 스키마 적용
-   ```bash
-   npx supabase link --project-ref <프로젝트 ref>
-   npx supabase db push
-   ```
-3. Supabase 대시보드 설정
-   - **Authentication → Email Templates**: "Magic Link"와 "Confirm signup" 템플릿에 `{{ .Token }}`을 넣어 인증번호가 보이게 하기 (`supabase/templates/otp.html` 참고)
-   - **Authentication → SMTP**: 기본 메일 발송은 시간당 발송량이 매우 적어서, 실제 운영에는 Resend·SendGrid 같은 SMTP 연결을 권장해요
-   - **Authentication → URL Configuration**: Site URL을 배포 주소로 변경
-4. [Vercel](https://vercel.com)에 이 저장소를 연결하고 환경변수 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` 설정 후 배포
+```bash
+npm update korea-universities
+node scripts/build-universities.mjs > supabase/migrations/<새 타임스탬프>_seed_universities.sql
+```
 
-## 다음에 해볼 것
+시드는 `on conflict do update`라 여러 번 적용해도 된다.
+같은 학교가 여러 지역에 있으면 스크립트 안의 `CAMPUS` 표에서 캠퍼스 이름을 붙인다.
 
-- 신고 · 차단, 매너 평가
-- 새 참여자 · 새 메시지 푸시 알림
-- 자주 가는 장소를 학교마다 추가 (현재는 동국대 WISE만 등록됨 — `places` 테이블)
-- 출발 시간 지난 공고 자동 마감
+## 운영 설정 (Supabase 대시보드)
+
+1. **Authentication → Emails → SMTP Settings**: 커스텀 SMTP 연결.
+   기본 메일 서버는 프로젝트 팀원 주소로만 발송돼서 학생들이 가입할 수 없다.
+   Gmail 앱 비밀번호(smtp.gmail.com:465)나 Resend 등을 쓰면 된다.
+2. **Authentication → URL Configuration**: Site URL을 배포 주소로,
+   Redirect URLs에 `https://<배포 주소>/auth/callback` 추가.
+3. **Authentication → Emails → Templates**: "Magic Link"와 "Confirm signup" 본문에
+   `{{ .Token }}`을 넣어 인증번호가 보이게 한다 (`supabase/templates/otp.html` 참고).
+   안 바꿔도 메일의 링크로 로그인은 된다.

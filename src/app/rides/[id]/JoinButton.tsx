@@ -14,8 +14,8 @@ export default function JoinButton({ rideId, blocker }: { rideId: string; blocke
     setError("");
     setLoading(true);
     const { error } = await createClient().rpc("join_ride", { p_ride: rideId });
-    setLoading(false);
     if (error) {
+      setLoading(false);
       setError(errorMessage(error));
       router.refresh();
       return;
@@ -24,11 +24,11 @@ export default function JoinButton({ rideId, blocker }: { rideId: string; blocke
   }
 
   return (
-    <div className="space-y-2">
-      {error && <p className="text-center text-sm text-red-500">{error}</p>}
+    <>
+      {error && <p className="mb-2 text-center text-sm text-red-500">{error}</p>}
       <button className="btn-taxi w-full" disabled={!!blocker || loading} onClick={join}>
-        {blocker ?? (loading ? "참여하는 중…" : "🚕 같이 타기")}
+        {blocker ?? (loading ? "들어가는 중" : "같이 타기")}
       </button>
-    </div>
+    </>
   );
 }
