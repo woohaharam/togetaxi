@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Avatar from "@/components/Avatar";
+import ReportSheet from "@/components/ReportSheet";
 import { BackIcon, CloseIcon, MoreIcon, SendIcon } from "@/components/icons";
 import { createClient } from "@/lib/supabase/client";
 import { errorMessage, formatDepart, formatTime, perPerson, won } from "@/lib/format";
@@ -16,6 +17,7 @@ type Props = {
   initialMembers: Member[];
   initialMessages: Message[];
   initialNames: Record<string, string>;
+  initialBlocked: string[];
   hostPayLink: string | null;
 };
 
@@ -33,6 +35,7 @@ export default function ChatRoom({
   initialMembers,
   initialMessages,
   initialNames,
+  initialBlocked,
   hostPayLink,
 }: Props) {
   const router = useRouter();
@@ -45,6 +48,8 @@ export default function ChatRoom({
   const [sheet, setSheet] = useState<"none" | "menu" | "fare">("none");
   const [fare, setFare] = useState("");
   const [error, setError] = useState("");
+  const [blocked, setBlocked] = useState(() => new Set(initialBlocked));
+  const [reporting, setReporting] = useState<{ id: string; name: string } | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const isHost = ride.host_id === me.id;
@@ -116,6 +121,16 @@ export default function ChatRoom({
     setSheet("none");
     setFare("");
     await refresh();
+  }
+
+  async function block(userId: string, name: string) {
+    if (!window.confirm(`${name}님을 차단할까요? 앞으로 서로의 모집에 참여할 수 없고, 목록에서도 보이지 않아요.`)) return;
+    const { error } = await supabase.from("blocks").insert({ blocker_id: me.id, blocked_id: userId });
+    if (error && !error.message.includes("duplicate")) {
+      setError(errorMessage(error));
+      return;
+    }
+    setBlocked((prev) => new Set(prev).add(userId));
   }
 
   const setStatus = (status: RideStatus, confirmText?: string) =>
@@ -247,19 +262,35 @@ export default function ChatRoom({
                       <Avatar id={m.user_id} name={m.profile?.nickname ?? "?"} />
                       <span className="font-medium">{m.profile?.nickname}</span>
                       {m.user_id === ride.host_id && <span className="text-[13px] text-zinc-400">방장</span>}
-                      {isHost && m.user_id !== me.id && ride.status !== "cancelled" && (
-                        <button
-                          className="ml-auto text-[13px] text-zinc-400"
-                          onClick={() =>
-                            run(
-                              "kick_member",
-                              { p_ride: rideId, p_user: m.user_id },
-                              `${m.profile?.nickname}님을 내보낼까요?`,
-                            )
-                          }
-                        >
-                          내보내기
-                        </button>
+                      {m.user_id !== me.id && (
+                        <span className="ml-auto flex gap-3 text-[13px] text-zinc-400">
+                          {isHost && ride.status !== "cancelled" && (
+                            <button
+                              onClick={() =>
+                                run(
+                                  "kick_member",
+                                  { p_ride: rideId, p_user: m.user_id },
+                                  `${m.profile?.nickname}님을 내보낼까요?`,
+                                )
+                              }
+                            >
+                              내보내기
+                            </button>
+                          )}
+                          <button
+                            onClick={() => {
+                              setSheet("none");
+                              setReporting({ id: m.user_id, name: m.profile?.nickname ?? "알 수 없음" });
+                            }}
+                          >
+                            신고
+                          </button>
+                          {blocked.has(m.user_id) ? (
+                            <span className="text-zinc-300">차단함</span>
+                          ) : (
+                            <button onClick={() => block(m.user_id, m.profile?.nickname ?? "")}>차단</button>
+                          )}
+                        </span>
                       )}
                     </li>
                   ))}
@@ -331,6 +362,10 @@ export default function ChatRoom({
             )}
           </div>
         </div>
+      )}
+
+      {reporting && (
+        <ReportSheet meId={me.id} rideId={rideId} target={reporting} onClose={() => setReporting(null)} />
       )}
     </div>
   );

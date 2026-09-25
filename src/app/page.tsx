@@ -35,6 +35,9 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
   if (scope === "region") query = query.eq("university.region", profile.university.region);
   if (keyword) query = query.or(`origin.ilike.%${keyword}%,destination.ilike.%${keyword}%`);
 
+  const { data: blocks } = await supabase.from("blocks").select("blocked_id").eq("blocker_id", profile.id);
+  if (blocks?.length) query = query.not("host_id", "in", `(${blocks.map((b) => b.blocked_id).join(",")})`);
+
   const { data: rides } = await query.returns<RideWithUniversity[]>();
 
   const tabs: { key: Scope; label: string }[] = [

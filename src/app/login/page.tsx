@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { errorMessage } from "@/lib/format";
@@ -71,7 +72,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-dvh flex-col px-6 pt-[18vh] pb-10">
+    <main className="flex min-h-dvh flex-col px-6 pt-[14vh] pb-8">
       <p className="text-[28px] leading-none font-extrabold tracking-tight">
         같이타<span className="text-taxi">.</span>
       </p>
@@ -128,7 +129,7 @@ export default function LoginPage() {
               required
             />
             <p className="text-[13px] text-zinc-400">
-              메일에 있는 로그인 링크를 눌러도 돼요. 스팸함도 한번 확인해 주세요.
+              메일이 안 보이면 스팸함도 확인해 주세요.
             </p>
             {error && <p className="text-sm text-red-500">{error}</p>}
             <button className="btn-primary w-full" disabled={loading || code.length < CODE_MIN}>
@@ -145,6 +146,35 @@ export default function LoginPage() {
           </form>
         )}
       </div>
+
+      {step === "email" && (
+        <ul className="mt-10 space-y-2.5 text-[14px] text-zinc-600">
+          {[
+            ["학교 메일 인증", "재학생만 가입할 수 있어요"],
+            ["수수료 없음", "택시비는 탄 사람끼리 나눠요"],
+            ["신고·차단", "문제가 생기면 바로 알려 주세요"],
+          ].map(([title, desc]) => (
+            <li key={title} className="flex gap-2">
+              <span className="mt-[7px] size-1.5 shrink-0 rounded-full bg-taxi" />
+              <span>
+                <b className="font-semibold text-zinc-800">{title}</b> · {desc}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <p className="mt-auto pt-10 text-center text-[12px] leading-relaxed text-zinc-400">
+        시작하면{" "}
+        <Link href="/terms" className="underline underline-offset-2">
+          이용약관
+        </Link>
+        과{" "}
+        <Link href="/privacy" className="underline underline-offset-2">
+          개인정보처리방침
+        </Link>
+        에 동의하는 것으로 봐요.
+      </p>
     </main>
   );
 }

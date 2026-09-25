@@ -6,6 +6,9 @@ import { requireProfile } from "@/lib/auth";
 import { universityLabel } from "@/lib/format";
 import { rideState } from "@/lib/rides";
 import type { RideWithUniversity } from "@/lib/types";
+import BlockList from "./BlockList";
+import DeleteAccount from "./DeleteAccount";
+import FeedbackForm from "./FeedbackForm";
 import ProfileForm from "./ProfileForm";
 
 export default async function MyPage() {
@@ -19,6 +22,13 @@ export default async function MyPage() {
       .returns<{ ride: RideWithUniversity | null }[]>(),
     supabase.rpc("is_admin"),
   ]);
+  const { data: blockRows } = await supabase
+    .from("blocks")
+    .select("blocked_id, profile:profiles!blocks_blocked_id_fkey(nickname)")
+    .eq("blocker_id", profile.id)
+    .order("created_at", { ascending: false })
+    .returns<{ blocked_id: string; profile: { nickname: string } | null }[]>();
+  const blocks = (blockRows ?? []).map((b) => ({ id: b.blocked_id, nickname: b.profile?.nickname ?? "알 수 없음" }));
 
   const rides = (data ?? []).flatMap((d) => (d.ride ? [d.ride] : []));
   const upcoming = rides
@@ -74,9 +84,30 @@ export default async function MyPage() {
           </Link>
         )}
 
-        <form action="/auth/signout" method="post" className="mt-10 text-center">
-          <button className="text-sm text-zinc-400">로그아웃</button>
+        <section className="card mt-8">
+          <h2 className="mb-1 font-bold">의견 보내기</h2>
+          <p className="mb-3 text-[13px] text-zinc-500">운영자가 직접 읽어요. 신고할 일이 있으면 채팅방이나 모집 화면의 신고를 써 주세요.</p>
+          <FeedbackForm userId={profile.id} />
+        </section>
+
+        <section className="card mt-2.5">
+          <h2 className="mb-2 font-bold">차단한 사람</h2>
+          <BlockList userId={profile.id} blocks={blocks} />
+        </section>
+
+        <nav className="mt-8 flex justify-center gap-4 text-[13px] text-zinc-500">
+          <Link href="/terms">이용약관</Link>
+          <Link href="/privacy" className="font-semibold">
+            개인정보처리방침
+          </Link>
+        </nav>
+
+        <form action="/auth/signout" method="post" className="mt-6 text-center">
+          <button className="text-sm text-zinc-500">로그아웃</button>
         </form>
+        <div className="mt-4">
+          <DeleteAccount />
+        </div>
       </main>
       <BottomNav />
     </>

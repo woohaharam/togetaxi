@@ -49,3 +49,30 @@ body {
 @utility label {
   @apply block text-[13px] font-medium text-zinc-500;
 }
+
+.legal h2 {
+  @apply mt-8 mb-2 text-base font-bold text-zinc-900;
+}
+
+.legal p,
+.legal ul,
+.legal table {
+  @apply mt-2;
+}
+
+.legal ul {
+  @apply list-disc space-y-1 pl-5;
+}
+
+.legal table {
+  @apply w-full border-collapse text-[13px];
+}
+
+.legal th,
+.legal td {
+  @apply border border-zinc-200 px-2.5 py-2 text-left align-top;
+}
+
+.legal th {
+  @apply bg-zinc-100 font-semibold text-zinc-800;
+}

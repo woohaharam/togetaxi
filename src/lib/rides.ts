@@ -20,13 +20,25 @@ export async function fetchMembers(supabase: SupabaseClient, rideId: string) {
   return data ?? [];
 }
 
-export async function fetchHost(supabase: SupabaseClient, hostId: string) {
+export async function fetchHost(supabase: SupabaseClient, hostId: string | null) {
+  if (!hostId) return null;
   const { data } = await supabase
     .from("profiles")
     .select("id, nickname, gender, university_id, pay_link")
     .eq("id", hostId)
     .maybeSingle<Profile>();
   return data;
+}
+
+/** 사람별로 실제로 같이 타고 출발한 횟수 */
+export async function fetchRideCounts(supabase: SupabaseClient, userIds: string[]) {
+  const counts: Record<string, number> = {};
+  if (!userIds.length) return counts;
+  const { data } = await supabase.rpc("ride_counts", { p_users: userIds });
+  for (const row of (data as { user_id: string; rides: number }[] | null) ?? []) {
+    counts[row.user_id] = row.rides;
+  }
+  return counts;
 }
 
 export type RideState = "open" | "full" | "closed" | "departed" | "cancelled";

@@ -20,7 +20,7 @@ export type Profile = {
 
 export type Ride = {
   id: string;
-  host_id: string;
+  host_id: string | null; // 방장이 탈퇴하면 null
   university_id: number;
   origin: string;
   destination: string;

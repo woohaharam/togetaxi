@@ -13,7 +13,7 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
   const members = await fetchMembers(supabase, id);
   if (!members.some((m) => m.user_id === profile.id)) redirect(`/rides/${id}`);
 
-  const [host, { data: recent }] = await Promise.all([
+  const [host, { data: recent }, { data: blocks }] = await Promise.all([
     fetchHost(supabase, ride.host_id),
     supabase
       .from("messages")
@@ -22,6 +22,7 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
       .order("id", { ascending: false })
       .limit(200)
       .returns<Message[]>(),
+    supabase.from("blocks").select("blocked_id").eq("blocker_id", profile.id),
   ]);
   const messages = (recent ?? []).reverse();
 
@@ -43,6 +44,7 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
       initialMembers={members}
       initialMessages={messages}
       initialNames={names}
+      initialBlocked={(blocks ?? []).map((b) => b.blocked_id)}
       hostPayLink={host?.pay_link ?? null}
     />
   );

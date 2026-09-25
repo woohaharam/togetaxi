@@ -5,8 +5,9 @@ import PageHeader from "@/components/PageHeader";
 import Route from "@/components/Route";
 import { requireProfile } from "@/lib/auth";
 import { formatDepart, perPerson, universityLabel, won } from "@/lib/format";
-import { fetchMembers, fetchRide, joinBlocker } from "@/lib/rides";
+import { fetchMembers, fetchRide, fetchRideCounts, joinBlocker } from "@/lib/rides";
 import JoinButton from "./JoinButton";
+import ReportRideButton from "./ReportRideButton";
 
 export default async function RidePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -14,6 +15,10 @@ export default async function RidePage({ params }: { params: Promise<{ id: strin
   const ride = await fetchRide(supabase, id);
   if (!ride) notFound();
   const members = await fetchMembers(supabase, id);
+  const counts = await fetchRideCounts(
+    supabase,
+    members.map((m) => m.user_id),
+  );
 
   const isMember = members.some((m) => m.user_id === profile.id);
   const seatsLeft = ride.capacity - ride.member_count;
@@ -62,10 +67,15 @@ export default async function RidePage({ params }: { params: Promise<{ id: strin
                 {m.user_id === profile.id && m.user_id !== ride.host_id && (
                   <span className="text-[13px] text-zinc-400">나</span>
                 )}
+                <span className="ml-auto text-[13px] text-zinc-400">
+                  {counts[m.user_id] ? `${counts[m.user_id]}번 같이 탔어요` : "첫 탑승"}
+                </span>
               </li>
             ))}
           </ul>
         </section>
+
+        {ride.host_id !== profile.id && <ReportRideButton meId={profile.id} rideId={ride.id} />}
       </main>
 
       <div className="fixed inset-x-0 bottom-0 mx-auto max-w-md bg-gradient-to-t from-zinc-50 from-70% to-transparent px-4 pt-6 pb-[max(1rem,env(safe-area-inset-bottom))]">
