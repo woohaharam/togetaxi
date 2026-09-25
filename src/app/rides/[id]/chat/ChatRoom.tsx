@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Avatar from "@/components/Avatar";
 import ReportSheet from "@/components/ReportSheet";
+import PushBanner from "@/components/pwa/PushBanner";
 import { BackIcon, CloseIcon, MoreIcon, SendIcon } from "@/components/icons";
 import { createClient } from "@/lib/supabase/client";
 import { errorMessage, formatDepart, formatTime, perPerson, won } from "@/lib/format";
@@ -162,6 +163,8 @@ export default function ChatRoom({
             <MoreIcon />
           </button>
         </div>
+
+        <PushBanner tag={`ride-${rideId}`} />
 
         {each !== null && (
           <div className="flex items-center gap-3 border-t border-zinc-100 bg-amber-50 px-4 py-2.5 text-sm">

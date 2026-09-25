@@ -10,6 +10,7 @@ import BlockList from "./BlockList";
 import DeleteAccount from "./DeleteAccount";
 import FeedbackForm from "./FeedbackForm";
 import ProfileForm from "./ProfileForm";
+import PushToggle from "@/components/pwa/PushToggle";
 
 export default async function MyPage() {
   const { supabase, profile, user } = await requireProfile();
@@ -85,6 +86,11 @@ export default async function MyPage() {
         )}
 
         <section className="card mt-8">
+          <h2 className="mb-2 font-bold">알림</h2>
+          <PushToggle />
+        </section>
+
+        <section className="card mt-2.5">
           <h2 className="mb-1 font-bold">의견 보내기</h2>
           <p className="mb-3 text-[13px] text-zinc-500">운영자가 직접 읽어요. 신고할 일이 있으면 채팅방이나 모집 화면의 신고를 써 주세요.</p>
           <FeedbackForm userId={profile.id} />

@@ -2,8 +2,8 @@
 export const SITE = {
   name: "같이타",
   url: "https://togetaxi.vercel.app",
-  operator: "같이타 운영자",
-  privacyOfficer: "같이타 운영자",
+  operator: "르숲",
+  privacyOfficer: "르숲",
   contactEmail: null as string | null,
   effectiveDate: "2026년 9월 25일",
 };

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Fragment } from "react";
 import AdSlot from "@/components/AdSlot";
 import BottomNav from "@/components/BottomNav";
+import InstallBanner from "@/components/pwa/InstallBanner";
 import RideCard from "@/components/RideCard";
 import { SearchIcon } from "@/components/icons";
 import { requireProfile } from "@/lib/auth";
@@ -84,6 +85,7 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
       </header>
 
       <main className="space-y-2.5 px-4 pt-1 pb-28">
+        <InstallBanner />
         {!rides?.length ? (
           <div className="pt-24 text-center">
             <p className="font-semibold text-zinc-700">

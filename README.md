@@ -76,3 +76,29 @@ select id from auth.users where email = '<학교 메일>';
 광고 단위 ID(DAN-…)를 넣은 뒤 다시 배포하면 목록의 세 번째 글 뒤에 광고 한 칸이 붙는다.
 모집 글이 4개 미만이거나 채울 광고가 없으면 칸 자체가 나오지 않는다.
 변수를 지우고 다시 배포하면 꺼진다.
+
+## 알림 (웹 푸시)
+
+새 메시지나 참여가 생기면 DB 트리거(`private.notify_push`)가 `pg_net`으로 `/api/push`를 부르고,
+그 라우트가 `web-push`로 각 기기에 보낸다. 보낸 사람 본인에게는 가지 않고, 그 채팅방을 보고 있는
+기기에는 서비스 워커가 알림을 띄우지 않는다. 만료된 구독은 자동으로 지운다.
+
+필요한 설정:
+
+- Vercel 환경 변수: `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `PUSH_SECRET`
+  (키는 `npx web-push generate-vapid-keys`로 만든다)
+- DB: `private.config`에 `push_url`(배포 주소 + `/api/push`)과 `push_secret`(위와 같은 값)
+
+```sql
+insert into private.config values
+  ('push_url', 'https://<배포 주소>/api/push'),
+  ('push_secret', '<PUSH_SECRET 과 같은 값>')
+on conflict (key) do update set value = excluded.value;
+```
+
+아이폰은 iOS 16.4 이상에서 홈 화면에 추가한 뒤에만 알림을 받을 수 있다.
+
+## 금칙어
+
+`public.has_banned_words()`에 목록이 있고, 채팅·모집 글·닉네임을 저장할 때 DB 트리거가 막는다.
+띄어쓰기나 특수문자를 끼워 넣어도 걸리며, '시발점'처럼 정상 단어는 예외로 둔다.

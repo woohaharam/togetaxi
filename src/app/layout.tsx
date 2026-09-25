@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import PwaInit from "@/components/pwa/PwaInit";
 import { SITE } from "@/lib/site";
 import "./globals.css";
 
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="font-sans antialiased">
         <div className="mx-auto min-h-dvh max-w-md bg-zinc-50 shadow-sm">{children}</div>
+        <PwaInit />
       </body>
     </html>
   );
