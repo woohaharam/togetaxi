@@ -14,8 +14,25 @@ body {
   word-break: keep-all;
 }
 
+/* 키보드로 이동할 때만 테두리를 보여준다. 마우스·터치로 누를 때는 나오지 않는다. */
+:focus-visible {
+  outline: 2px solid #18181b;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* 움직임을 줄이도록 설정한 기기에서는 전환 효과를 끈다. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 @utility input {
-  @apply w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-base outline-none transition-colors placeholder:text-zinc-500 focus:border-zinc-900;
+  @apply w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-base transition-colors placeholder:text-zinc-500 focus:border-zinc-900 focus:outline-none;
 }
 
 @utility btn {
@@ -75,4 +92,9 @@ body {
 
 .legal th {
   @apply bg-zinc-100 font-semibold text-zinc-800;
+}
+
+/* 내용을 불러오는 동안 자리만 잡아 두는 회색 블록 */
+@utility skeleton {
+  @apply animate-pulse rounded-lg bg-zinc-200;
 }

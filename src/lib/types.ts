@@ -16,6 +16,7 @@ export type Profile = {
   gender: Gender;
   university_id: number;
   pay_link: string | null;
+  agreed_at: string;
 };
 
 export type Ride = {
@@ -27,6 +28,8 @@ export type Ride = {
   depart_at: string;
   capacity: number;
   member_count: number;
+  /** 한 번이라도 모였던 최대 인원. 누가 나가도 줄지 않아 매칭 성공 여부를 남긴다. */
+  peak_members: number;
   same_gender_only: boolean;
   host_gender: Gender;
   estimated_fare: number | null;
@@ -47,6 +50,7 @@ export type Member = {
 export type Message = {
   id: number;
   ride_id: string;
+  /** null이면 시스템 메시지 */
   user_id: string | null;
   content: string;
   created_at: string;
