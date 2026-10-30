@@ -184,7 +184,7 @@ export default function ChatRoom({
         {messages.map((m, i) => {
           if (m.user_id === null) {
             return (
-              <p key={m.id} className="my-3 text-center text-xs text-zinc-400">
+              <p key={m.id} className="my-3 text-center text-xs text-zinc-500">
                 {m.content}
               </p>
             );
@@ -197,7 +197,7 @@ export default function ChatRoom({
           if (mine) {
             return (
               <div key={m.id} className={`flex items-end justify-end gap-1.5 ${continued ? "mt-1" : "mt-3"}`}>
-                <span className="text-[10px] text-zinc-400 tabular-nums">{formatTime(m.created_at)}</span>
+                <span className="text-[10px] text-zinc-500 tabular-nums">{formatTime(m.created_at)}</span>
                 <p className="max-w-[75%] rounded-2xl rounded-br-md bg-zinc-900 px-3.5 py-2 text-[15px] break-words whitespace-pre-wrap text-white">
                   {m.content}
                 </p>
@@ -213,7 +213,7 @@ export default function ChatRoom({
                   <p className="max-w-[80%] rounded-2xl rounded-tl-md bg-white px-3.5 py-2 text-[15px] break-words whitespace-pre-wrap">
                     {m.content}
                   </p>
-                  <span className="text-[10px] text-zinc-400 tabular-nums">{formatTime(m.created_at)}</span>
+                  <span className="text-[10px] text-zinc-500 tabular-nums">{formatTime(m.created_at)}</span>
                 </div>
               </div>
             </div>
@@ -264,9 +264,9 @@ export default function ChatRoom({
                     <li key={m.user_id} className="flex items-center gap-2.5">
                       <Avatar id={m.user_id} name={m.profile?.nickname ?? "?"} />
                       <span className="font-medium">{m.profile?.nickname}</span>
-                      {m.user_id === ride.host_id && <span className="text-[13px] text-zinc-400">방장</span>}
+                      {m.user_id === ride.host_id && <span className="text-[13px] text-zinc-500">방장</span>}
                       {m.user_id !== me.id && (
-                        <span className="ml-auto flex gap-3 text-[13px] text-zinc-400">
+                        <span className="ml-auto flex gap-3 text-[13px] text-zinc-500">
                           {isHost && ride.status !== "cancelled" && (
                             <button
                               onClick={() =>
@@ -353,7 +353,7 @@ export default function ChatRoom({
                     onChange={(e) => setFare(e.target.value.replace(/\D/g, "").slice(0, 7))}
                     autoFocus
                   />
-                  <span className="absolute top-1/2 right-4 -translate-y-1/2 text-zinc-400">원</span>
+                  <span className="absolute top-1/2 right-4 -translate-y-1/2 text-zinc-500">원</span>
                 </div>
                 <p className="h-5 text-sm text-zinc-600">
                   {fareNum > 0 && `${ride.member_count}명 · 1인 ${won(perPerson(fareNum, ride.member_count))}`}

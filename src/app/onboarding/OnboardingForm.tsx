@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { errorMessage, universityLabel } from "@/lib/format";
@@ -38,9 +39,11 @@ export default function OnboardingForm({
   const [query, setQuery] = useState("");
   const [adding, setAdding] = useState(false);
   const [draft, setDraft] = useState({ name: "", campus: "", region: "" });
+  const [agreed, setAgreed] = useState({ age: false, terms: false, privacy: false });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const allAgreed = agreed.age && agreed.terms && agreed.privacy;
   const selected = universities.find((u) => u.id === universityId) ?? null;
   const results = useMemo(() => {
     const q = normalize(query);
@@ -75,6 +78,7 @@ export default function OnboardingForm({
     setError("");
     if (!gender) return setError("성별을 골라 주세요");
     if (!universityId) return setError("학교를 골라 주세요");
+    if (!allAgreed) return setError("필수 항목에 모두 동의해 주세요");
     setLoading(true);
     const { error } = await createClient()
       .from("profiles")
@@ -127,7 +131,7 @@ export default function OnboardingForm({
               </button>
             ))}
           </div>
-          <p className="text-[13px] text-zinc-400">동성끼리 타기 옵션에 쓰여요. 나중에 바꿀 수 없어요.</p>
+          <p className="text-[13px] text-zinc-500">동성끼리 타기 옵션에 쓰여요. 나중에 바꿀 수 없어요.</p>
         </div>
 
         <div className="space-y-2">
@@ -181,7 +185,7 @@ export default function OnboardingForm({
                 onChange={(e) => setQuery(e.target.value)}
               />
               {!query && suggested.length > 0 && (
-                <p className="px-1 pt-1 text-[13px] text-zinc-400">@{emailDomain} 메일을 쓰는 학교</p>
+                <p className="px-1 pt-1 text-[13px] text-zinc-500">@{emailDomain} 메일을 쓰는 학교</p>
               )}
               {results.length > 0 && (
                 <ul className="max-h-72 divide-y divide-zinc-100 overflow-y-auto rounded-xl border border-zinc-200 bg-white">
@@ -193,7 +197,7 @@ export default function OnboardingForm({
                         onClick={() => setUniversityId(u.id)}
                       >
                         <span>{universityLabel(u)}</span>
-                        <span className="text-[13px] text-zinc-400">{u.region}</span>
+                        <span className="text-[13px] text-zinc-500">{u.region}</span>
                       </button>
                     </li>
                   ))}
@@ -216,8 +220,53 @@ export default function OnboardingForm({
           )}
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        <button className="btn-taxi w-full" disabled={loading}>
+        <section className="space-y-1 rounded-xl border border-zinc-200 bg-white p-1">
+          <label className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 font-semibold">
+            <input
+              type="checkbox"
+              className="size-5 shrink-0 accent-zinc-900"
+              checked={allAgreed}
+              onChange={(e) => {
+                const v = e.target.checked;
+                setAgreed({ age: v, terms: v, privacy: v });
+              }}
+            />
+            모두 동의해요
+          </label>
+          <div className="border-t border-zinc-100" />
+          {(
+            [
+              ["age", "만 14세 이상이에요", null],
+              ["terms", "이용약관에 동의해요", "/terms"],
+              ["privacy", "개인정보 수집·이용에 동의해요", "/privacy"],
+            ] as const
+          ).map(([key, text, href]) => (
+            <label key={key} className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-[15px]">
+              <input
+                type="checkbox"
+                className="size-5 shrink-0 accent-zinc-900"
+                checked={agreed[key]}
+                onChange={(e) => setAgreed({ ...agreed, [key]: e.target.checked })}
+              />
+              <span className="flex-1">
+                <span className="text-zinc-500">[필수]</span> {text}
+              </span>
+              {href && (
+                <Link
+                  href={href}
+                  target="_blank"
+                  className="shrink-0 px-1 text-[13px] text-zinc-500 underline underline-offset-2"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  보기
+                </Link>
+              )}
+            </label>
+          ))}
+        </section>
+
+        {error && <p className="text-sm text-red-600">{error}</p>}
+        <button className="btn-taxi w-full" disabled={loading || !allAgreed}>
           시작하기
         </button>
       </form>

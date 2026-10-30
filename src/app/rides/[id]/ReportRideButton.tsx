@@ -7,7 +7,7 @@ export default function ReportRideButton({ meId, rideId }: { meId: string; rideI
   const [open, setOpen] = useState(false);
   return (
     <>
-      <button className="mt-5 w-full text-center text-[13px] text-zinc-400" onClick={() => setOpen(true)}>
+      <button className="mt-5 w-full text-center text-[13px] text-zinc-500" onClick={() => setOpen(true)}>
         이 모집 신고하기
       </button>
       {open && <ReportSheet meId={meId} rideId={rideId} onClose={() => setOpen(false)} />}

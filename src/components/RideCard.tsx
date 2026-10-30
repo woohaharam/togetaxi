@@ -8,8 +8,8 @@ const BADGE = {
   open: "bg-taxi text-zinc-900",
   full: "bg-zinc-100 text-zinc-500",
   closed: "bg-zinc-100 text-zinc-500",
-  departed: "bg-zinc-100 text-zinc-400",
-  cancelled: "bg-zinc-100 text-zinc-400",
+  departed: "bg-zinc-100 text-zinc-500",
+  cancelled: "bg-zinc-100 text-zinc-500",
 };
 
 export default function RideCard({

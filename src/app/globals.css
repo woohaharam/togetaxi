@@ -15,7 +15,7 @@ body {
 }
 
 @utility input {
-  @apply w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-base outline-none transition-colors placeholder:text-zinc-400 focus:border-zinc-900;
+  @apply w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-base outline-none transition-colors placeholder:text-zinc-500 focus:border-zinc-900;
 }
 
 @utility btn {

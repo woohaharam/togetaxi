@@ -165,7 +165,7 @@ export default function NewRideForm({ places, gender }: { places: string[]; gend
         <label className="flex cursor-pointer items-center justify-between gap-4 rounded-xl bg-white px-4 py-3.5">
           <span>
             <span className="block font-medium">{gender === "female" ? "여자" : "남자"}끼리만 타기</span>
-            <span className="block text-[13px] text-zinc-400">다른 성별은 참여할 수 없어요</span>
+            <span className="block text-[13px] text-zinc-500">다른 성별은 참여할 수 없어요</span>
           </span>
           <input
             type="checkbox"
@@ -177,7 +177,7 @@ export default function NewRideForm({ places, gender }: { places: string[]; gend
 
         <section className="space-y-2">
           <label className="label" htmlFor="fare">
-            예상 택시비 <span className="font-normal text-zinc-400">(선택)</span>
+            예상 택시비 <span className="font-normal text-zinc-500">(선택)</span>
           </label>
           <div className="relative">
             <input
@@ -188,7 +188,7 @@ export default function NewRideForm({ places, gender }: { places: string[]; gend
               value={fare ? Number(fare).toLocaleString("ko-KR") : ""}
               onChange={(e) => setFare(e.target.value.replace(/\D/g, "").slice(0, 7))}
             />
-            <span className="absolute top-1/2 right-4 -translate-y-1/2 text-zinc-400">원</span>
+            <span className="absolute top-1/2 right-4 -translate-y-1/2 text-zinc-500">원</span>
           </div>
           {fareNum > 0 && (
             <p className="text-sm text-zinc-500">
@@ -199,7 +199,7 @@ export default function NewRideForm({ places, gender }: { places: string[]; gend
 
         <section className="space-y-2">
           <label className="label" htmlFor="note">
-            하고 싶은 말 <span className="font-normal text-zinc-400">(선택)</span>
+            하고 싶은 말 <span className="font-normal text-zinc-500">(선택)</span>
           </label>
           <textarea
             id="note"

@@ -22,7 +22,7 @@ export default function BlockList({
     }
   }
 
-  if (!blocks.length) return <p className="text-sm text-zinc-400">차단한 사람이 없어요.</p>;
+  if (!blocks.length) return <p className="text-sm text-zinc-500">차단한 사람이 없어요.</p>;
 
   return (
     <ul className="divide-y divide-zinc-100">

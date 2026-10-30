@@ -11,6 +11,7 @@ import DeleteAccount from "./DeleteAccount";
 import FeedbackForm from "./FeedbackForm";
 import ProfileForm from "./ProfileForm";
 import PushToggle from "@/components/pwa/PushToggle";
+import AdConsent from "./AdConsent";
 
 export default async function MyPage() {
   const { supabase, profile, user } = await requireProfile();
@@ -58,7 +59,7 @@ export default async function MyPage() {
 
         <h2 className="mt-8 mb-2.5 px-1 font-bold">타기로 한 택시</h2>
         {upcoming.length === 0 ? (
-          <p className="px-1 text-sm text-zinc-400">아직 없어요.</p>
+          <p className="px-1 text-sm text-zinc-500">아직 없어요.</p>
         ) : (
           <div className="space-y-2.5">
             {upcoming.map((r) => (
@@ -81,7 +82,7 @@ export default async function MyPage() {
         {isAdmin === true && (
           <Link href="/admin" className="card mt-8 flex items-center justify-between text-[15px] font-medium">
             운영 통계
-            <span className="text-zinc-400">›</span>
+            <span className="text-zinc-500">›</span>
           </Link>
         )}
 
@@ -94,6 +95,11 @@ export default async function MyPage() {
           <h2 className="mb-1 font-bold">의견 보내기</h2>
           <p className="mb-3 text-[13px] text-zinc-500">운영자가 직접 읽어요. 신고할 일이 있으면 채팅방이나 모집 화면의 신고를 써 주세요.</p>
           <FeedbackForm userId={profile.id} />
+        </section>
+
+        <section className="card mt-2.5">
+          <h2 className="mb-2 font-bold">광고 쿠키</h2>
+          <AdConsent />
         </section>
 
         <section className="card mt-2.5">

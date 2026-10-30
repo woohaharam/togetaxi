@@ -44,7 +44,7 @@ export default async function RidePage({ params }: { params: Promise<{ id: strin
           <dl className="mt-5 space-y-2 border-t border-zinc-100 pt-4 text-[15px]">
             {facts.map(([k, v]) => (
               <div key={k} className="flex gap-4">
-                <dt className="w-16 shrink-0 text-zinc-400">{k}</dt>
+                <dt className="w-16 shrink-0 text-zinc-500">{k}</dt>
                 <dd>{v}</dd>
               </div>
             ))}
@@ -63,11 +63,11 @@ export default async function RidePage({ params }: { params: Promise<{ id: strin
               <li key={m.user_id} className="flex items-center gap-2.5">
                 <Avatar id={m.user_id} name={m.profile?.nickname ?? "?"} />
                 <span className="font-medium">{m.profile?.nickname ?? "알 수 없음"}</span>
-                {m.user_id === ride.host_id && <span className="text-[13px] text-zinc-400">방장</span>}
+                {m.user_id === ride.host_id && <span className="text-[13px] text-zinc-500">방장</span>}
                 {m.user_id === profile.id && m.user_id !== ride.host_id && (
-                  <span className="text-[13px] text-zinc-400">나</span>
+                  <span className="text-[13px] text-zinc-500">나</span>
                 )}
-                <span className="ml-auto text-[13px] text-zinc-400">
+                <span className="ml-auto text-[13px] text-zinc-500">
                   {counts[m.user_id] ? `${counts[m.user_id]}번 같이 탔어요` : "첫 탑승"}
                 </span>
               </li>

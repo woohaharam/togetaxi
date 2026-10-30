@@ -44,7 +44,7 @@ export default function PushBanner({ tag }: { tag: string }) {
         >
           {state === "off" ? "알림 켜기" : "방법 보기"}
         </button>
-        <button className="grid size-8 shrink-0 place-items-center text-zinc-400" onClick={dismiss} aria-label="닫기">
+        <button className="grid size-8 shrink-0 place-items-center text-zinc-500" onClick={dismiss} aria-label="닫기">
           <CloseIcon size={16} />
         </button>
       </div>

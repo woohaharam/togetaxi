@@ -63,7 +63,7 @@ export default function ProfileForm({
           value={payLink}
           onChange={(e) => setPayLink(e.target.value)}
         />
-        <p className="text-[13px] text-zinc-400">방장일 때 채팅방 사람들에게 보여요.</p>
+        <p className="text-[13px] text-zinc-500">방장일 때 채팅방 사람들에게 보여요.</p>
       </div>
       <div className="flex items-center gap-3">
         <button className="btn-primary px-5 py-2.5 text-[15px]" disabled={!dirty || saving}>

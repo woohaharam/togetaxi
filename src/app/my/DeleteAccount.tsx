@@ -28,7 +28,7 @@ export default function DeleteAccount() {
 
   return (
     <div className="text-center">
-      <button className="text-[13px] text-zinc-400 underline underline-offset-2" onClick={remove} disabled={loading}>
+      <button className="text-[13px] text-zinc-500 underline underline-offset-2" onClick={remove} disabled={loading}>
         {loading ? "탈퇴 처리 중" : "탈퇴하기"}
       </button>
       {error && <p className="mt-2 text-sm text-red-500">{error}</p>}

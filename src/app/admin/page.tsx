@@ -64,10 +64,10 @@ export default async function AdminPage() {
       <main className="space-y-6 px-4 pb-16">
         <section className="card">
           <h2 className="text-[15px] font-semibold">
-            처리할 신고 <span className="text-zinc-400">{inbox.reports.length}</span>
+            처리할 신고 <span className="text-zinc-500">{inbox.reports.length}</span>
           </h2>
           {inbox.reports.length === 0 ? (
-            <p className="mt-2 text-sm text-zinc-400">새 신고가 없어요.</p>
+            <p className="mt-2 text-sm text-zinc-500">새 신고가 없어요.</p>
           ) : (
             <ul className="mt-3 divide-y divide-zinc-100">
               {inbox.reports.map((r) => (
@@ -79,7 +79,7 @@ export default async function AdminPage() {
                     </p>
                     {r.ride && <p className="truncate text-zinc-500">{r.ride}</p>}
                     {r.detail && <p className="mt-1 whitespace-pre-wrap text-zinc-700">{r.detail}</p>}
-                    <p className="mt-1 text-xs text-zinc-400">
+                    <p className="mt-1 text-xs text-zinc-500">
                       {r.reporter} · {formatDepart(r.created_at)}
                     </p>
                   </div>
@@ -118,13 +118,13 @@ export default async function AdminPage() {
         <section className="card">
           <h2 className="text-[15px] font-semibold">최근 의견</h2>
           {inbox.feedback.length === 0 ? (
-            <p className="mt-2 text-sm text-zinc-400">아직 받은 의견이 없어요.</p>
+            <p className="mt-2 text-sm text-zinc-500">아직 받은 의견이 없어요.</p>
           ) : (
             <ul className="mt-3 divide-y divide-zinc-100">
               {inbox.feedback.map((f) => (
                 <li key={f.id} className="py-3 text-sm">
                   <p className="whitespace-pre-wrap text-zinc-800">{f.content}</p>
-                  <p className="mt-1 text-xs text-zinc-400">
+                  <p className="mt-1 text-xs text-zinc-500">
                     {f.author ?? "탈퇴한 사용자"} · {formatDepart(f.created_at)}
                   </p>
                 </li>
@@ -142,7 +142,7 @@ function Tile({ label, value, sub, wide }: { label: string; value: string; sub?:
     <div className={`card ${wide ? "col-span-2" : ""}`}>
       <p className="text-[13px] text-zinc-500">{label}</p>
       <p className="mt-1 text-2xl font-bold tabular-nums">{value}</p>
-      {sub && <p className="mt-0.5 text-xs text-zinc-400">{sub}</p>}
+      {sub && <p className="mt-0.5 text-xs text-zinc-500">{sub}</p>}
     </div>
   );
 }
@@ -188,7 +188,7 @@ function DailyBars({
           );
         })}
       </div>
-      <div className="mt-1.5 flex justify-between text-[11px] text-zinc-400 tabular-nums">
+      <div className="mt-1.5 flex justify-between text-[11px] text-zinc-500 tabular-nums">
         <span>{shortDay(days[0]?.day)}</span>
         <span>오늘</span>
       </div>
@@ -202,7 +202,7 @@ function RankList({ title, rows, unit }: { title: string; rows: Ranked[]; unit: 
     <section className="card">
       <h2 className="text-[15px] font-semibold">{title}</h2>
       {rows.length === 0 ? (
-        <p className="mt-3 text-sm text-zinc-400">아직 데이터가 없어요.</p>
+        <p className="mt-3 text-sm text-zinc-500">아직 데이터가 없어요.</p>
       ) : (
         <ol className="mt-3 space-y-2.5">
           {rows.map((r) => (

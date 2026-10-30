@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Fragment } from "react";
 import AdSlot from "@/components/AdSlot";
 import BottomNav from "@/components/BottomNav";
+import CookieBanner from "@/components/CookieBanner";
 import InstallBanner from "@/components/pwa/InstallBanner";
 import RideCard from "@/components/RideCard";
 import { SearchIcon } from "@/components/icons";
@@ -59,7 +60,7 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
 
         <form className="relative mt-3" role="search">
           <input type="hidden" name="scope" value={scope} />
-          <SearchIcon size={18} className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-zinc-400" />
+          <SearchIcon size={18} className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-zinc-500" />
           <input
             name="q"
             defaultValue={q}
@@ -91,7 +92,7 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
             <p className="font-semibold text-zinc-700">
               {keyword ? `'${q}' 가는 모집이 아직 없어요` : "지금 모집 중인 택시가 없어요"}
             </p>
-            <p className="mt-1 text-sm text-zinc-400">
+            <p className="mt-1 text-sm text-zinc-500">
               {scope === "school" ? "범위를 넓혀 보거나 " : ""}직접 모집을 열어 보세요.
             </p>
             <Link href="/rides/new" className="btn-taxi mt-5 px-5 py-2.5 text-[15px]">
@@ -109,6 +110,7 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
         )}
       </main>
       <BottomNav />
+      <CookieBanner />
     </>
   );
 }
